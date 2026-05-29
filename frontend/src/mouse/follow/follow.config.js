@@ -34,9 +34,12 @@ export const FOLLOW_CONFIG = {
   // 阶段3 合体后等待多久进入离场（毫秒）。需求：3 秒
   mergeWaitMs: 3000,
 
-  // 切换成 Mouse3 时，相对 Mouse1 的原位置向左移动的距离（毫米）
+  // 合体后两只猫之间保持的“边缘间隙”（毫米）；往哪一侧拉开会根据 Mouse2 从哪侧接触自动决定
   // CSS 标准：1mm ≈ 3.78px（96px = 1 英寸 = 25.4mm）
-  mergeShiftLeftMm: 30,
+  mergeShiftLeftMm: 0,
+
+  // Mouse3 单独的显示微调：向上偏移的像素（正数上移，用于对齐 Mouse3 的位置）
+  mouse3OffsetY: 3,
 
   // 阶段5 两图一起向右离场的速度（px/帧）
   exitSpeed: 5,
@@ -48,4 +51,14 @@ export const FOLLOW_CONFIG = {
   walkSpeed: 0.008,
   // 判定“正在移动”的每帧位移阈值（px）：超过才触发走路缩放，静止时不动
   walkMoveThreshold: 0.3,
+
+  // ---- 动画期间的自定义鼠标指针 ----
+  // 开关：true 时整段动画播放期间把鼠标换成自定义图案，动画结束自动恢复
+  cursorEnabled: true,
+  // 图片放在 frontend/public/ 下，这里填它的访问路径。用从 fish.ico 提取的 48x48 PNG
+  cursorImage: '/fish.png',
+  // 指针“热点”（真正的点击/定位点）相对图片左上角的偏移（px）。fish.png 是 48x48，
+  // 想让热点在图片中心就填 24 24；默认左上角 0 0。根据鱼的形状自行调整
+  cursorHotspotX: 24,
+  cursorHotspotY: 24,
 }

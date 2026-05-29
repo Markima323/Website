@@ -1,14 +1,10 @@
 import { useEffect, useRef } from 'react'
-import mouse1 from '../Image/Mouse1.png'
-import mouse2 from '../Image/Mouse2.png'
-import mouse3 from '../Image/Mouse3.png'
-import mouse4 from '../Image/Mouse4.png'
 import { useImageData } from './useImageData'
 import { pixelsOverlap } from './pixelOverlap'
 import { FOLLOW_CONFIG as CFG } from './follow.config'
 
-// 四张图的地址（模块级常量，引用稳定，方便 useImageData 加载）
-const SOURCES = { m1: mouse1, m2: mouse2, m3: mouse3, m4: mouse4 }
+// 四张图放在 frontend/public/ 下，用根路径访问（同源，可用 canvas 读像素）
+const SOURCES = { m1: '/Mouse1.png', m2: '/Mouse2.png', m3: '/Mouse3.png', m4: '/Mouse4.png' }
 
 // 毫米转像素：CSS 标准 96px = 1 英寸 = 25.4mm
 const MM_TO_PX = 96 / 25.4
@@ -43,6 +39,7 @@ export default function Follow() {
   const phaseStart = useRef(0)
   const started = useRef(false)
   const lineY = useRef(cy)
+  const exitDir = useRef(1) // 离场方向：+1 向右、-1 向左（接触时按 Mouse2 在哪侧决定）
   // 角色：px/py 是“锚点（左下角非透明像素）”的屏幕坐标
   const char1 = useRef({ key: 'm1', px: cx, py: cy, flip: false, prevPx: cx, prevPy: cy })
   const char2 = useRef({ key: 'm2', px: 0, py: 0, flip: false, prevPx: 0, prevPy: 0 })
@@ -77,8 +74,10 @@ export default function Follow() {
       const aY = d.anchor.y * scale
       // 翻转时锚点在元素内的水平位置变成 dispW - aX
       const anchorOffsetX = ch.flip ? dispW - aX : aX
+      // 个别图片的额外显示偏移：Mouse3 整体上移 mouse3OffsetY 像素（正数上移）
+      const extraY = ch.key === 'm3' ? -CFG.mouse3OffsetY : 0
       const L = ch.px - anchorOffsetX + jitterX
-      const T = ch.py - aY + jitterY
+      const T = ch.py - aY + jitterY + extraY
 
       if (el.dataset.key !== ch.key) {
         el.src = SOURCES[ch.key]
@@ -134,6 +133,10 @@ export default function Follow() {
       if (!started.current) {
         started.current = true
         phaseStart.current = now
+        // 动画开始：把鼠标换成自定义图案（url + 热点偏移 + 回退值 auto）
+        if (CFG.cursorEnabled) {
+          document.documentElement.style.cursor = `url("${CFG.cursorImage}") ${CFG.cursorHotspotX} ${CFG.cursorHotspotY}, auto`
+        }
       }
       const p = phase.current
 
@@ -172,9 +175,31 @@ export default function Follow() {
 
         // 两图非透明像素接触 → 合体
         if (pixelsOverlap(c1, c2, CFG.contactSampleStep)) {
-          c1.key = 'm3' // Mouse1 变 Mouse3（素材自带朝右）
-          c1.flip = false
-          c1.px -= CFG.mergeShiftLeftMm * MM_TO_PX // 在原位置上左移 20mm
+          // Mouse2 从哪一侧接触：决定离场方向与 Mouse3 朝向（镜像对称）
+          const fromRight = c2.px > c1.px
+          exitDir.current = fromRight ? 1 : -1
+
+          c1.key = 'm3'
+          // Mouse3 素材自带朝右：让它朝向离场（前进）方向。向右离场→朝右，向左离场→朝左
+          c1.flip = !fromRight
+
+          // 用“边界框边缘”而非锚点来摆放，使两图边缘间隙 = 设定距离（与朝向无关、左右对称）
+          // c2.L / c2.dispW 是本帧 renderChar(c2) 写入的 Mouse2 屏幕左缘与显示宽度
+          const d3 = data.m3
+          const scale3 = CFG.displayWidth / d3.naturalWidth
+          const dispW3 = CFG.displayWidth
+          const aX3 = d3.anchor.x * scale3
+          const gapPx = CFG.mergeShiftLeftMm * MM_TO_PX
+          if (fromRight) {
+            // Mouse3 在 Mouse2 左后方：右边缘 = Mouse2 左边缘 - 间距（flip=false，锚点偏移=aX3）
+            const right3 = c2.L - gapPx
+            c1.px = right3 - dispW3 + aX3
+          } else {
+            // Mouse3 在 Mouse2 右后方：左边缘 = Mouse2 右边缘 + 间距（flip=true，锚点偏移=dispW3-aX3）
+            const left3 = c2.L + c2.dispW + gapPx
+            c1.px = left3 + dispW3 - aX3
+          }
+
           const line = (c1.py + c2.py) / 2
           lineY.current = line
           c1.py = line
@@ -190,25 +215,28 @@ export default function Follow() {
         renderChar(ref2.current, char2.current)
         if (now - phaseStart.current >= CFG.mergeWaitMs) {
           char1.current.key = 'm4' // Mouse3 变 Mouse4
-          // 需求：Mouse4 与 Mouse2 都以左右翻转的状态向右离场
-          char1.current.flip = true
-          char2.current.flip = true
+          // Mouse4 与 Mouse2 都是朝左素材：让它们朝向离场方向（向右离场就翻转成朝右）
+          const faceRight = exitDir.current > 0
+          char1.current.flip = faceRight
+          char2.current.flip = faceRight
           phase.current = 'exit'
         }
       } else if (p === 'exit') {
-        // 两图一起向右移动离场
-        char1.current.px += CFG.exitSpeed
-        char2.current.px += CFG.exitSpeed
+        // 两图保持间距、一起朝离场方向移动
+        const step = exitDir.current * CFG.exitSpeed
+        char1.current.px += step
+        char2.current.px += step
         char1.current.py = lineY.current
         char2.current.py = lineY.current
         renderChar(ref1.current, char1.current, 0, 0, walkScaleY(now, true))
         renderChar(ref2.current, char2.current, 0, 0, walkScaleY(now, true))
-        if (
-          char1.current.L > window.innerWidth &&
-          char2.current.L > window.innerWidth
-        ) {
+        // 判断是否都移出了对应的屏幕边缘
+        const offScreen = (c) =>
+          exitDir.current > 0 ? c.L > window.innerWidth : c.L + c.dispW < 0
+        if (offScreen(char1.current) && offScreen(char2.current)) {
           ref1.current.style.visibility = 'hidden'
           ref2.current.style.visibility = 'hidden'
+          document.documentElement.style.cursor = '' // 动画结束：恢复默认鼠标
           phase.current = 'done'
           return // 结束循环
         }
@@ -220,7 +248,10 @@ export default function Follow() {
     }
 
     raf = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf)
+    return () => {
+      cancelAnimationFrame(raf)
+      document.documentElement.style.cursor = '' // 组件卸载也恢复默认鼠标，避免残留
+    }
   }, [data])
 
   const baseStyle = {
@@ -237,8 +268,8 @@ export default function Follow() {
 
   return (
     <>
-      <img ref={ref1} src={mouse1} alt="主角猫" draggable={false} style={baseStyle} />
-      <img ref={ref2} src={mouse2} alt="冲过来的猫" draggable={false} style={baseStyle} />
+      <img ref={ref1} src="/Mouse1.png" alt="主角猫" draggable={false} style={baseStyle} />
+      <img ref={ref2} src="/Mouse2.png" alt="冲过来的猫" draggable={false} style={baseStyle} />
     </>
   )
 }
