@@ -1,0 +1,24 @@
+# 开发模式（热更新 HMR）。和主 compose 叠加使用：
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+# 然后访问 http://localhost:5173 —— 改 frontend 下的代码，保存即生效，无需重建。
+#
+# 它在容器里跑 Vite 开发服务器（所以本机不用装 Node），
+# 把 frontend 源码目录挂载进容器，node_modules 用匿名卷留在容器里。
+services:
+  frontend-dev:
+    image: node:20-alpine
+    container_name: website-frontend-dev
+    working_dir: /app
+    command: sh -c "npm install && npm run dev"
+    environment:
+      # Vite 把 /api 代理到 backend 容器
+      VITE_API_TARGET: http://backend:8080
+      # 容器里文件监听用轮询，保证 Windows 宿主下热更新可靠
+      CHOKIDAR_USEPOLLING: "true"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend

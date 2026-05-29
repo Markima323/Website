@@ -59,6 +59,24 @@ docker compose up --build
 
 ---
 
+## 开发模式（热更新 HMR，日常改前端用这个）
+
+生产模式每次改完都要 `--build` 重建。日常调前端用开发模式：改代码保存即生效，
+无需重建、无需刷新；Node 跑在容器里，本机不用装。
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+```
+
+访问 **http://localhost:5173**。改 `frontend/` 下任何代码/配置，保存即热更新。
+
+停止开发容器：`docker compose -f docker-compose.dev.yml stop frontend-dev`
+
+> 说明：开发容器用 Vite dev server（见 `docker-compose.dev.yml`）；
+> `vite.config.js` 开启了文件轮询，保证 Windows 宿主下热更新可靠。
+
+---
+
 ## 不用 Docker 单独运行（可选，需自行安装工具）
 
 后端（需 Maven 或使用 IDE）：
