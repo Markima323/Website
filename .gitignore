@@ -17,3 +17,6 @@ frontend/dist/
 # OS
 .DS_Store
 Thumbs.db
+
+# Claude 项目记忆文件（仅本地使用，不提交）
+/CLAUDE.md
