@@ -27,7 +27,8 @@ const walkScaleY = (now, moving) =>
 export default function Follow() {
   const ref1 = useRef(null) // 主角：Mouse1 → Mouse3 → Mouse4
   const ref2 = useRef(null) // Mouse2
-  const data = useImageData(SOURCES, CFG.alphaThreshold)
+  // 关闭时传空，useImageData 不会加载图片（data 保持 null，主循环也就不会启动）
+  const data = useImageData(CFG.enabled ? SOURCES : {}, CFG.alphaThreshold)
 
   const cx = typeof window !== 'undefined' ? window.innerWidth / 2 : 0
   const cy = typeof window !== 'undefined' ? window.innerHeight / 2 : 0
@@ -46,6 +47,7 @@ export default function Follow() {
 
   // 监听鼠标
   useEffect(() => {
+    if (!CFG.enabled) return
     const onMove = (e) => {
       cursor.current = { x: e.clientX, y: e.clientY, inside: true }
     }
@@ -253,6 +255,9 @@ export default function Follow() {
       document.documentElement.style.cursor = '' // 组件卸载也恢复默认鼠标，避免残留
     }
   }, [data])
+
+  // 开关关闭：不渲染任何图片（放在所有 hooks 之后，符合 React Hooks 规则）
+  if (!CFG.enabled) return null
 
   const baseStyle = {
     position: 'fixed',

@@ -1,5 +1,8 @@
 // 鼠标跟随 / 剧情动画的可调参数。改这里就能调手感，不用动逻辑代码。
 export const FOLLOW_CONFIG = {
+  // 总开关：是否启用整个鼠标剧情动画。false = 完全不触发（等对应功能开发好了再设 true）
+  enabled: false,
+
   // 图片在屏幕上显示的宽度（px），高度按原图比例自动缩放
   displayWidth: 140,
 

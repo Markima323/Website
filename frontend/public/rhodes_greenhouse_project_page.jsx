@@ -1,30 +1,10 @@
-import { motion } from 'framer-motion'
-import { Link, useLocation } from 'react-router-dom'
-import { navItems } from '../data/siteContent'
+import React from "react";
 
-// 让 react-router 的 Link 支持 framer-motion 的手势/动画
-const MotionLink = motion.create(Link)
+const navItems = ["PROJECT", "FIELD", "DATA", "ARCHIVE"];
 
-// 渐入动画：父容器让子元素依次（stagger）出现，子元素淡入 + 上移
-const container = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.12, delayChildren: 0.08 } },
-}
-const fadeUp = {
-  hidden: { opacity: 0, y: 22 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } },
-}
-
-// 左上角 Logo（温室图标 + 文字），点击回首页。
 function Logo() {
   return (
-    <MotionLink
-      to="/"
-      whileHover={{ y: -2 }}
-      whileTap={{ scale: 0.96 }}
-      className="group flex items-center gap-4"
-      aria-label="Rhodes Greenhouse home"
-    >
+    <a href="/" className="group flex items-center gap-4" aria-label="Rhodes Greenhouse home">
       <div className="grid h-11 w-11 place-items-center border border-[#d8e4bd]/35 bg-[#eef6dd]/5 transition group-hover:border-[#d8e4bd]/70">
         <svg viewBox="0 0 40 40" className="h-7 w-7 text-[#d8e4bd]" fill="none" aria-hidden="true">
           <path d="M8 24 20 11l12 13" stroke="currentColor" strokeWidth="1.2" />
@@ -34,15 +14,15 @@ function Logo() {
           <path d="M22 27c4-3 7-1 7 3-4 .7-6-.5-7-3Z" stroke="currentColor" strokeWidth="1.1" />
         </svg>
       </div>
+
       <div className="leading-none tracking-[0.44em] text-[#f5f7ef]">
         <div className="text-[11px] font-light">RHODES</div>
         <div className="mt-2 text-sm font-semibold tracking-[0.34em]">GREENHOUSE</div>
       </div>
-    </MotionLink>
-  )
+    </a>
+  );
 }
 
-// 占位卡片里探头的小猫。
 function CatPeek() {
   return (
     <svg
@@ -59,14 +39,14 @@ function CatPeek() {
       <path d="M36 45H13M37 51H17M87 45h26M86 51h20" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" opacity=".65" />
       <path d="M47 57h19M76 57h18" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
     </svg>
-  )
+  );
 }
 
-// 右侧的猫咪动画预览（呼吸 + 树叶飘动 + 爪印脉冲，纯 CSS 循环动画）。
 function CatPreview() {
   return (
     <div className="relative mx-auto flex aspect-[1.25/1] w-full max-w-[380px] items-center justify-center overflow-hidden rounded-[26px] border border-dashed border-[#d8e4bd]/18 bg-[#111817]/18 shadow-[inset_0_1px_24px_rgba(255,255,255,0.025)]">
       <div className="absolute inset-5 rounded-[22px] bg-[radial-gradient(circle_at_70%_18%,rgba(216,228,189,0.10),transparent_28%),radial-gradient(circle_at_22%_88%,rgba(255,255,255,0.05),transparent_38%)]" />
+
       <svg viewBox="0 0 360 260" className="relative z-10 h-full w-full text-[#d8e4bd]/70" fill="none" aria-label="cat animation preview">
         <path
           className="leaf-path"
@@ -81,6 +61,7 @@ function CatPreview() {
           <path d="M267 50c10-11 22-5 19 8-10 1-17-1-19-8Z" stroke="currentColor" strokeWidth="1.5" />
           <path d="M268 50c3 7 4 12 2 18" stroke="currentColor" strokeWidth="1" opacity=".7" />
         </g>
+
         <g className="cat-breathe" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
           <path d="M122 178c-26-34-12-77 28-80 43-3 65 32 55 80" strokeWidth="1.7" />
           <path d="M145 100 151 69l22 25" strokeWidth="1.7" />
@@ -92,112 +73,82 @@ function CatPreview() {
           <path d="M126 126H92M128 135H99M205 126h32M202 135h28" strokeWidth="1.1" opacity=".6" />
         </g>
       </svg>
+
       <div className="absolute bottom-5 left-1/2 z-20 flex -translate-x-1/2 items-center gap-4">
         <span className="paw active" />
         <span className="paw" />
         <span className="paw" />
       </div>
     </div>
-  )
+  );
 }
 
-// 统一风格的内容页外壳：温室绿背景 + 顶部导航（当前路由自动高亮）+ 标题区 + 内容区 + 右侧猫咪动画预览。
-// 新页面只要 <PageShell eyebrow="..." title="..." subtitle="...">，内容区 children 不传则显示占位。
-export default function PageShell({ eyebrow, title, subtitle, children }) {
-  const { pathname } = useLocation()
-
+export default function RhodesGreenhouseProjectPage() {
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#1d2523] px-6 py-8 font-sans text-[#f4f5ee] selection:bg-[#d8e4bd] selection:text-[#16201d] md:px-12 lg:px-16">
-      {/* 背景光感与植物阴影 */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_22%_16%,rgba(216,228,189,0.10),transparent_28%),radial-gradient(circle_at_78%_72%,rgba(255,255,255,0.06),transparent_30%),linear-gradient(115deg,rgba(255,255,255,0.035),transparent_48%)]" />
       <div className="pointer-events-none absolute -bottom-16 right-2 h-[430px] w-[390px] rounded-full bg-[#0f1514] opacity-55 blur-3xl" />
       <div className="plant-shadow pointer-events-none absolute bottom-0 right-0 h-[420px] w-[380px] opacity-20" />
 
-      <motion.header
-        initial={{ opacity: 0, y: -14 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: 'easeOut' }}
-        className="relative z-10 mx-auto flex max-w-[1480px] items-start justify-between gap-8"
-      >
+      <header className="relative z-10 mx-auto flex max-w-[1480px] items-start justify-between gap-8">
         <Logo />
+
         <nav className="hidden items-start gap-12 text-[12px] font-medium tracking-[0.55em] text-[#f4f5ee]/82 md:flex" aria-label="Primary navigation">
-          {navItems.map((item) => {
-            const active = pathname === item.to
-            return (
-              <MotionLink
-                key={item.to}
-                to={item.to}
-                whileHover={{ y: -2 }}
-                whileTap={{ scale: 0.94 }}
-                className="group relative pb-5 transition hover:text-[#d8e4bd]"
-              >
-                <span className={active ? 'text-[#d8e4bd]' : ''}>{item.label}</span>
-                {active && (
-                  <span className="absolute bottom-1 left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-[#d8e4bd] shadow-[0_0_14px_rgba(216,228,189,0.65)]" />
-                )}
-              </MotionLink>
-            )
-          })}
+          {navItems.map((item) => (
+            <a key={item} href={`#${item.toLowerCase()}`} className="group relative pb-5 transition hover:text-[#d8e4bd]">
+              <span className={item === "PROJECT" ? "text-[#d8e4bd]" : ""}>{item}</span>
+              {item === "PROJECT" && (
+                <span className="absolute bottom-1 left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-[#d8e4bd] shadow-[0_0_14px_rgba(216,228,189,0.65)]" />
+              )}
+            </a>
+          ))}
         </nav>
-      </motion.header>
+      </header>
 
       <section className="relative z-10 mx-auto mt-20 max-w-[1480px] rounded-[34px] border border-white/14 bg-[#2b3331]/76 px-7 py-10 shadow-[0_34px_100px_rgba(0,0,0,0.26),inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-xl md:mt-24 md:px-14 md:py-16 lg:px-20">
         <div className="cat-tail pointer-events-none absolute -left-11 bottom-24 h-20 w-20 rounded-full border-b border-l border-[#d8e4bd]/60" />
 
         <div className="grid items-center gap-14 lg:grid-cols-[1.18fr_0.82fr] lg:gap-16">
-          <motion.div variants={container} initial="hidden" animate="show" className="relative min-w-0">
-            <motion.p variants={fadeUp} className="text-xs font-semibold uppercase tracking-[0.62em] text-[#d8e4bd]/74">{eyebrow}</motion.p>
+          <div className="relative min-w-0">
+            <p className="text-xs font-semibold uppercase tracking-[0.62em] text-[#d8e4bd]/74">Section / Project</p>
 
-            <motion.div variants={fadeUp} className="mt-9 flex flex-wrap items-end gap-x-7 gap-y-5">
+            <div className="mt-9 flex flex-wrap items-end gap-x-7 gap-y-5">
               <h1 className="text-[clamp(4rem,9vw,7.25rem)] font-black leading-none tracking-[-0.08em] text-[#fbfcf8] drop-shadow-[0_14px_30px_rgba(0,0,0,0.28)]">
-                {title}
+                项目
               </h1>
-              {subtitle && (
-                <div className="mb-4 flex min-w-[240px] items-center gap-6">
-                  <span className="h-px w-44 bg-[#d8e4bd]/70" />
-                  <span className="text-sm font-semibold uppercase tracking-[0.55em] text-[#f4f5ee]/70">{subtitle}</span>
-                </div>
-              )}
-            </motion.div>
+              <div className="mb-4 flex min-w-[240px] items-center gap-6">
+                <span className="h-px w-44 bg-[#d8e4bd]/70" />
+                <span className="text-sm font-semibold uppercase tracking-[0.55em] text-[#f4f5ee]/70">Project</span>
+              </div>
+            </div>
 
-            <motion.div variants={fadeUp}>
-              {children ?? (
-                <div className="relative mt-16 max-w-3xl rounded-[18px] border border-white/16 bg-[#6f7670]/24 px-8 py-8 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
-                  <CatPeek />
-                  <p className="text-xs font-bold uppercase tracking-[0.48em] text-[#d8e4bd]">Under Construction</p>
-                  <p className="mt-6 max-w-2xl text-base leading-9 tracking-[0.03em] text-[#f4f5ee]/72 md:text-lg">
-                    该模块正在建设中，内容稍后上线。这是一个统一风格的空白页面模板，
-                    <br className="hidden md:block" />
-                    可以直接往里面填内容。
-                  </p>
-                </div>
-              )}
-            </motion.div>
+            <div className="relative mt-16 max-w-3xl rounded-[18px] border border-white/16 bg-[#6f7670]/24 px-8 py-8 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
+              <CatPeek />
+              <p className="text-xs font-bold uppercase tracking-[0.48em] text-[#d8e4bd]">Under Construction</p>
+              <p className="mt-6 max-w-2xl text-base leading-9 tracking-[0.03em] text-[#f4f5ee]/72 md:text-lg">
+                该模块正在建设中，内容稍后上线。这是一个统一风格的空白页面模板，
+                <br className="hidden md:block" />
+                可以直接往里面填内容。
+              </p>
+            </div>
 
-            <MotionLink
-              to="/"
-              variants={fadeUp}
-              whileHover={{ y: -3 }}
-              whileTap={{ scale: 0.97 }}
-              className="mt-14 inline-flex h-14 items-center gap-3 rounded-[8px] border border-[#d8e4bd]/62 px-8 text-sm font-bold uppercase tracking-[0.35em] text-[#f4f5ee] transition hover:border-[#d8e4bd] hover:bg-[#d8e4bd]/8 hover:shadow-[0_18px_45px_rgba(0,0,0,0.22)] focus:outline-none focus:ring-2 focus:ring-[#d8e4bd]/70"
+            <a
+              href="/"
+              className="mt-14 inline-flex h-14 items-center gap-3 rounded-[8px] border border-[#d8e4bd]/62 px-8 text-sm font-bold uppercase tracking-[0.35em] text-[#f4f5ee] transition hover:-translate-y-0.5 hover:border-[#d8e4bd] hover:bg-[#d8e4bd]/8 hover:shadow-[0_18px_45px_rgba(0,0,0,0.22)] focus:outline-none focus:ring-2 focus:ring-[#d8e4bd]/70"
             >
               <span aria-hidden="true" className="text-lg leading-none">←</span>
               Back Home
-            </MotionLink>
-          </motion.div>
+            </a>
+          </div>
 
-          <motion.aside
-            initial={{ opacity: 0, scale: 0.95, y: 24 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.35, ease: 'easeOut' }}
-            className="relative border-white/12 lg:border-l lg:pl-16"
-          >
+          <aside className="relative border-white/12 lg:border-l lg:pl-16">
             <CatPreview />
+
             <div className="mx-auto mt-7 max-w-[380px] text-center">
               <p className="text-xs font-semibold uppercase tracking-[0.55em] text-[#f4f5ee]/36">Cat Animation Preview</p>
               <p className="mt-4 text-sm tracking-[0.16em] text-[#f4f5ee]/42">猫咪动画预览（循环）</p>
             </div>
-          </motion.aside>
+          </aside>
         </div>
       </section>
 
@@ -206,23 +157,28 @@ export default function PageShell({ eyebrow, title, subtitle, children }) {
           0%, 100% { transform: translateY(8px); opacity: .68; }
           45%, 60% { transform: translateY(0); opacity: 1; }
         }
+
         @keyframes catBreathe {
           0%, 100% { transform: translateY(1px) scaleY(1); }
           50% { transform: translateY(-2px) scaleY(1.015); }
         }
+
         @keyframes leafFloat {
           0% { transform: translate(0, 0) rotate(-8deg); opacity: .45; }
           50% { transform: translate(8px, -8px) rotate(9deg); opacity: .9; }
           100% { transform: translate(0, 0) rotate(-8deg); opacity: .45; }
         }
+
         @keyframes pawPulse {
           0%, 100% { transform: scale(.85); opacity: .45; }
           50% { transform: scale(1.08); opacity: .95; }
         }
+
         .cat-peek { animation: catPeek 5.2s ease-in-out infinite; transform-origin: 50% 100%; }
         .cat-breathe { animation: catBreathe 3.8s ease-in-out infinite; transform-origin: 50% 90%; }
         .leaf-float { animation: leafFloat 4.6s ease-in-out infinite; transform-origin: 260px 56px; }
         .leaf-path { animation: pawPulse 4.6s ease-in-out infinite; }
+
         .paw {
           position: relative;
           display: inline-block;
@@ -230,6 +186,7 @@ export default function PageShell({ eyebrow, title, subtitle, children }) {
           height: 11px;
           color: rgba(244, 245, 238, .25);
         }
+
         .paw::before,
         .paw::after {
           content: "";
@@ -237,15 +194,27 @@ export default function PageShell({ eyebrow, title, subtitle, children }) {
           border-radius: 999px;
           background: currentColor;
         }
-        .paw::before { width: 7px; height: 7px; left: 2.5px; bottom: 0; }
+
+        .paw::before {
+          width: 7px;
+          height: 7px;
+          left: 2.5px;
+          bottom: 0;
+        }
+
         .paw::after {
-          width: 3px; height: 3px; left: 1px; top: 0;
+          width: 3px;
+          height: 3px;
+          left: 1px;
+          top: 0;
           box-shadow: 4px -2px 0 currentColor, 8px 0 0 currentColor;
         }
+
         .paw.active {
           color: rgba(216, 228, 189, .96);
           animation: pawPulse 2.4s ease-in-out infinite;
         }
+
         .plant-shadow::before {
           content: "";
           position: absolute;
@@ -256,10 +225,17 @@ export default function PageShell({ eyebrow, title, subtitle, children }) {
             linear-gradient(-24deg, transparent 61%, rgba(216,228,189,.08) 62%, transparent 64%);
           filter: blur(.3px);
         }
+
         @media (prefers-reduced-motion: reduce) {
-          .cat-peek, .cat-breathe, .leaf-float, .leaf-path, .paw.active { animation: none; }
+          .cat-peek,
+          .cat-breathe,
+          .leaf-float,
+          .leaf-path,
+          .paw.active {
+            animation: none;
+          }
         }
       `}</style>
     </main>
-  )
+  );
 }
