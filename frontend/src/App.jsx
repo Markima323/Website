@@ -1,9 +1,9 @@
 import { Routes, Route } from 'react-router-dom'
 import Home from './pages/Home'
+import AboutMe from './pages/AboutMe'
 import Project from './pages/Project'
-import Field from './pages/Field'
-import Data from './pages/Data'
-import Archive from './pages/Archive'
+import Resume from './pages/Resume'
+import Contact from './pages/Contact'
 import NotFound from './pages/NotFound'
 import Follow from './mouse/follow/Follow.jsx'
 
@@ -12,10 +12,10 @@ function App() {
     <>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/aboutme" element={<AboutMe />} />
         <Route path="/project" element={<Project />} />
-        <Route path="/field" element={<Field />} />
-        <Route path="/data" element={<Data />} />
-        <Route path="/archive" element={<Archive />} />
+        <Route path="/resume" element={<Resume />} />
+        <Route path="/contact" element={<Contact />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
 

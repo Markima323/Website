@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion'
 import { Link, useLocation } from 'react-router-dom'
 import { navItems } from '../data/siteContent'
+import { useLanguage } from '../i18n/LanguageContext'
+import LanguageSwitch from './LanguageSwitch'
 
 // 让 react-router 的 Link 支持 framer-motion 的手势/动画
 const MotionLink = motion.create(Link)
@@ -102,9 +104,15 @@ function CatPreview() {
 }
 
 // 统一风格的内容页外壳：温室绿背景 + 顶部导航（当前路由自动高亮）+ 标题区 + 内容区 + 右侧猫咪动画预览。
-// 新页面只要 <PageShell eyebrow="..." title="..." subtitle="...">，内容区 children 不传则显示占位。
-export default function PageShell({ eyebrow, title, subtitle, children }) {
+// 用法：<PageShell section="project">。section 对应 translations.pages[section]，文案随语言切换。
+// 内容区 children 不传则显示占位。
+export default function PageShell({ section, children }) {
   const { pathname } = useLocation()
+  const { t, lang } = useLanguage()
+  const { eyebrow, title, subtitle } = t.pages[section] // 标题区文案（随语言）
+  // 中文用紧凑字距，英文保留宽字距 / 大写（宽字距是给英文设计的，套中文会很松散）
+  const navTrack = lang === 'zh' ? 'tracking-[0.16em]' : 'tracking-[0.55em]'
+  const backTrack = lang === 'zh' ? 'tracking-[0.12em]' : 'uppercase tracking-[0.35em]'
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#1d2523] px-6 py-8 font-sans text-[#f4f5ee] selection:bg-[#d8e4bd] selection:text-[#16201d] md:px-12 lg:px-16">
@@ -120,25 +128,44 @@ export default function PageShell({ eyebrow, title, subtitle, children }) {
         className="relative z-10 mx-auto flex max-w-[1480px] items-start justify-between gap-8"
       >
         <Logo />
-        <nav className="hidden items-start gap-12 text-[12px] font-medium tracking-[0.55em] text-[#f4f5ee]/82 md:flex" aria-label="Primary navigation">
-          {navItems.map((item) => {
-            const active = pathname === item.to
-            return (
-              <MotionLink
-                key={item.to}
-                to={item.to}
-                whileHover={{ y: -2 }}
-                whileTap={{ scale: 0.94 }}
-                className="group relative pb-5 transition hover:text-[#d8e4bd]"
-              >
-                <span className={active ? 'text-[#d8e4bd]' : ''}>{item.label}</span>
-                {active && (
-                  <span className="absolute bottom-1 left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-[#d8e4bd] shadow-[0_0_14px_rgba(216,228,189,0.65)]" />
-                )}
-              </MotionLink>
-            )
-          })}
-        </nav>
+        <div className="flex items-start gap-10">
+          <nav className={`hidden items-start gap-12 text-[12px] font-medium text-[#f4f5ee]/82 md:flex ${navTrack}`} aria-label="Primary navigation">
+            {navItems.map((item) => {
+              // GitHub 等外链：用 <a> 新标签打开
+              if (item.external) {
+                return (
+                  <motion.a
+                    key={item.key}
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    whileHover={{ y: -2 }}
+                    whileTap={{ scale: 0.94 }}
+                    className="group relative pb-5 transition hover:text-[#d8e4bd]"
+                  >
+                    {t.nav[item.key]}
+                  </motion.a>
+                )
+              }
+              const active = pathname === item.to
+              return (
+                <MotionLink
+                  key={item.key}
+                  to={item.to}
+                  whileHover={{ y: -2 }}
+                  whileTap={{ scale: 0.94 }}
+                  className="group relative pb-5 transition hover:text-[#d8e4bd]"
+                >
+                  <span className={active ? 'text-[#d8e4bd]' : ''}>{t.nav[item.key]}</span>
+                  {active && (
+                    <span className="absolute bottom-1 left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-[#d8e4bd] shadow-[0_0_14px_rgba(216,228,189,0.65)]" />
+                  )}
+                </MotionLink>
+              )
+            })}
+          </nav>
+          <LanguageSwitch className="text-[#f4f5ee]/70 hover:text-[#d8e4bd]" />
+        </div>
       </motion.header>
 
       <section className="relative z-10 mx-auto mt-20 max-w-[1480px] rounded-[34px] border border-white/14 bg-[#2b3331]/76 px-7 py-10 shadow-[0_34px_100px_rgba(0,0,0,0.26),inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-xl md:mt-24 md:px-14 md:py-16 lg:px-20">
@@ -164,11 +191,9 @@ export default function PageShell({ eyebrow, title, subtitle, children }) {
               {children ?? (
                 <div className="relative mt-16 max-w-3xl rounded-[18px] border border-white/16 bg-[#6f7670]/24 px-8 py-8 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
                   <CatPeek />
-                  <p className="text-xs font-bold uppercase tracking-[0.48em] text-[#d8e4bd]">Under Construction</p>
+                  <p className="text-xs font-bold uppercase tracking-[0.48em] text-[#d8e4bd]">{t.page.underConstruction}</p>
                   <p className="mt-6 max-w-2xl text-base leading-9 tracking-[0.03em] text-[#f4f5ee]/72 md:text-lg">
-                    该模块正在建设中，内容稍后上线。这是一个统一风格的空白页面模板，
-                    <br className="hidden md:block" />
-                    可以直接往里面填内容。
+                    {t.page.constructionDesc}
                   </p>
                 </div>
               )}
@@ -179,10 +204,10 @@ export default function PageShell({ eyebrow, title, subtitle, children }) {
               variants={fadeUp}
               whileHover={{ y: -3 }}
               whileTap={{ scale: 0.97 }}
-              className="mt-14 inline-flex h-14 items-center gap-3 rounded-[8px] border border-[#d8e4bd]/62 px-8 text-sm font-bold uppercase tracking-[0.35em] text-[#f4f5ee] transition hover:border-[#d8e4bd] hover:bg-[#d8e4bd]/8 hover:shadow-[0_18px_45px_rgba(0,0,0,0.22)] focus:outline-none focus:ring-2 focus:ring-[#d8e4bd]/70"
+              className={`mt-14 inline-flex h-14 items-center gap-3 rounded-[8px] border border-[#d8e4bd]/62 px-8 text-sm font-bold text-[#f4f5ee] transition hover:border-[#d8e4bd] hover:bg-[#d8e4bd]/8 hover:shadow-[0_18px_45px_rgba(0,0,0,0.22)] focus:outline-none focus:ring-2 focus:ring-[#d8e4bd]/70 ${backTrack}`}
             >
               <span aria-hidden="true" className="text-lg leading-none">←</span>
-              Back Home
+              {t.page.backHome}
             </MotionLink>
           </motion.div>
 
@@ -194,8 +219,8 @@ export default function PageShell({ eyebrow, title, subtitle, children }) {
           >
             <CatPreview />
             <div className="mx-auto mt-7 max-w-[380px] text-center">
-              <p className="text-xs font-semibold uppercase tracking-[0.55em] text-[#f4f5ee]/36">Cat Animation Preview</p>
-              <p className="mt-4 text-sm tracking-[0.16em] text-[#f4f5ee]/42">猫咪动画预览（循环）</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.55em] text-[#f4f5ee]/36">{t.page.catPreviewTitle}</p>
+              <p className="mt-4 text-sm tracking-[0.16em] text-[#f4f5ee]/42">{t.page.catPreviewNote}</p>
             </div>
           </motion.aside>
         </div>

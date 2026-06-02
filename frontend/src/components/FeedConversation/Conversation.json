@@ -1,0 +1,179 @@
+
+{
+  "flow_title": "Cat Snack Cabinet Conversation",
+  "language": "en",
+  "start_node": "start",
+  "nodes": [
+    {
+      "id": "start",
+      "speaker": "Cat",
+      "text": "Thank you for feeding me. You’re such a good person!",
+      "options": [
+        {
+          "label": "You’re welcome.",
+          "next_node": "friend_question"
+        }
+      ]
+    },
+    {
+      "id": "friend_question",
+      "speaker": "Cat",
+      "text": "I think we’re good friends now. What do you think?",
+      "options": [
+        {
+          "label": "Of course.",
+          "next_node": "snack_recommendation"
+        },
+        {
+          "label": "I don’t think so.",
+          "next_node": "not_friends_response"
+        }
+      ]
+    },
+    {
+      "id": "not_friends_response",
+      "speaker": "Cat",
+      "text": "All right. Have a nice day. I hope that oneday in the future, you’ll pet me.",
+      "options": [
+        {
+          "label": "Continue",
+          "next_node": "end_not_friends"
+        }
+      ]
+    },
+    {
+      "id": "end_not_friends",
+      "speaker": "System",
+      "text": "End of this branch.",
+      "options": []
+    },
+    {
+      "id": "snack_recommendation",
+      "speaker": "Cat",
+      "text": "Please allow me to recommend my favorite snack to you: freeze-dried chicken breast! It’s crispy and fragrant, and it can make every cat rush toward you like a rocket.",
+      "options": [
+        {
+          "label": "That sounds wonderful.",
+          "next_node": "snack_cabinet_empty"
+        }
+      ]
+    },
+    {
+      "id": "snack_cabinet_empty",
+      "speaker": "Cat",
+      "text": "You’re my friend, and I want to treat you to freeze-dried chicken breast. But the problem right now is… the snack cabinet is empty.",
+      "options": [
+        {
+          "label": "Oh No.",
+          "next_node": "fill_cabinet_request"
+        }
+      ]
+    },
+    {
+      "id": "fill_cabinet_request",
+      "speaker": "Cat",
+      "text": "But if you can help me fill the snack cabinet, we’ll be able to enjoy snacks together.",
+      "options": [
+        {
+          "label": "Of course.",
+          "next_node": "reason_analysis"
+        },
+        {
+          "label": "No, I’m not interested.",
+          "next_node": "cat_pleads"
+        }
+      ]
+    },
+    {
+      "id": "cat_pleads",
+      "speaker": "Cat",
+      "text": "Please, please.",
+      "options": [
+        {
+          "label": "Of course.",
+          "next_node": "reason_analysis"
+        },
+        {
+          "label": "No, I’m not interested.",
+          "next_node": "cat_pleads"
+        }
+      ]
+    },
+    {
+      "id": "reason_analysis",
+      "speaker": "Cat",
+      "text": "First, we need to analyze why the snack cabinet is empty: my owner lost her job, so she cut the budget.",
+      "options": [
+        {
+          "label": "Continue",
+          "next_node": "job_solution"
+        }
+      ]
+    },
+    {
+      "id": "job_solution",
+      "speaker": "Cat",
+      "text": "If we can help her find a job, she’ll buy new snacks again!",
+      "options": [
+        {
+          "label": "That makes sense.",
+          "next_node": "job_referral_request"
+        }
+      ]
+    },
+    {
+      "id": "job_referral_request",
+      "speaker": "Cat",
+      "text": "So, dear friend, if you know of any software development job openings, please recommend them to my owner. You can contact her on this page.",
+      "options": [
+        {
+          "label": "Of course, I’d be happy to help.",
+          "next_node": "secret_note"
+        },
+        {
+          "label": "Sorry, I can’t do that.",
+          "next_node": "kind_response"
+        }
+      ]
+    },
+    {
+      "id": "kind_response",
+      "speaker": "Cat",
+      "text": "It’s okay. Since we’re friends, when I get new freeze-dried treats in the future, I’ll share them with you.",
+      "options": [
+        {
+          "label": "Continue",
+          "next_node": "future_share_repeat"
+        }
+      ]
+    },
+    {
+      "id": "future_share_repeat",
+      "speaker": "Cat",
+      "text": "Thank you so much! When I get new freeze-dried treats in the future, I’ll share them with you.",
+      "options": [
+        {
+          "label": "Continue",
+          "next_node": "secret_note"
+        }
+      ]
+    },
+    {
+      "id": "secret_note",
+      "speaker": "Cat",
+      "text": "By the way, let’s keep this as a secret between the two of us. She didn’t like the mouse I gave her last time, so I hope she’ll like this gift.",
+      "options": [
+        {
+          "label": "Of course, no problem.",
+          "next_node": "gift_note"
+        }
+      ]
+    },
+    {
+      "id": "gift_note",
+      "speaker": "Cat",
+      "text": "Goodbye, dear friend. Have a nice day.",
+      "options": []
+    }
+]
+}

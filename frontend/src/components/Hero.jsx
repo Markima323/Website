@@ -3,11 +3,18 @@ import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
 import Navbar from './Navbar'
 import LabTerminal from './LabTerminal'
-import { heroContent } from '../data/siteContent'
+import { heroLinks } from '../data/siteContent'
+import { useLanguage } from '../i18n/LanguageContext'
 
 // 第一屏 Hero：背景装饰层 + 顶部导航 + 左侧文案 + 右侧实验室终端面板。
-// content 可传入自定义文案（见 data/siteContent.jsx 的 heroContent 结构）。
-export default function Hero({ content = heroContent }) {
+// 文案随当前语言切换（见 i18n/translations.js 的 hero）。
+export default function Hero() {
+  const { t, lang } = useLanguage()
+  const content = t.hero
+  // 中文用紧凑字距（宽字距套中文会松散难看）
+  const btnTrack = lang === 'zh' ? 'tracking-[0.1em]' : 'tracking-[0.24em]'
+  // 大标题：英文用负字距更紧凑有力；中文负字距会让两字重叠，改成正字距拉开一点
+  const titleTrack = lang === 'zh' ? 'tracking-[0.08em]' : 'tracking-[-0.08em]'
   return (
     <section className="relative min-h-screen isolate">
       {/* 背景装饰层 */}
@@ -32,7 +39,7 @@ export default function Hero({ content = heroContent }) {
         ))}
       </div>
 
-      <Navbar brand={content} />
+      <Navbar />
 
       <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-10 px-6 pb-16 pt-10 lg:grid-cols-[1.05fr_0.95fr] lg:px-10 lg:pb-20 lg:pt-20">
         <motion.div initial={{ opacity: 0, x: -28 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }}>
@@ -41,12 +48,12 @@ export default function Hero({ content = heroContent }) {
             {content.badge}
           </div>
 
-          <h1 className="max-w-4xl text-6xl font-black leading-[0.9] tracking-[-0.08em] text-white md:text-8xl lg:text-9xl">
+          <h1 className={`max-w-4xl text-6xl font-black leading-[0.9] text-white md:text-8xl lg:text-9xl ${titleTrack}`}>
             {content.titleTop}
             <span className="block text-white/30">{content.titleBottom}</span>
           </h1>
 
-          <div className="mt-6 flex items-end gap-5">
+          <div className="mt-6 flex items-center gap-5">
             <div className="h-px w-36 bg-white/45" />
             <p className="text-sm uppercase tracking-[0.52em] text-white/45">{content.subtitle}</p>
           </div>
@@ -55,15 +62,15 @@ export default function Hero({ content = heroContent }) {
 
           <div className="mt-10 flex flex-wrap gap-4">
             <Link
-              to={content.primaryTo}
-              className="group flex items-center gap-3 bg-white px-6 py-4 text-sm font-semibold tracking-[0.24em] text-[#0b1010] transition hover:bg-lime-100"
+              to={heroLinks.primaryTo}
+              className={`group flex items-center gap-3 bg-white px-6 py-4 text-sm font-semibold text-[#0b1010] transition hover:bg-lime-100 ${btnTrack}`}
             >
               {content.primaryCta}
               <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
             </Link>
             <Link
-              to={content.secondaryTo}
-              className="border border-white/20 bg-white/[0.06] px-6 py-4 text-sm font-semibold tracking-[0.24em] text-white/80 backdrop-blur-xl transition hover:bg-white/15"
+              to={heroLinks.secondaryTo}
+              className={`border border-white/20 bg-white/[0.06] px-6 py-4 text-sm font-semibold text-white/80 backdrop-blur-xl transition hover:bg-white/15 ${btnTrack}`}
             >
               {content.secondaryCta}
             </Link>

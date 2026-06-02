@@ -1,8 +1,12 @@
 import { motion } from 'framer-motion'
-import { features as defaultFeatures, featuresIntro } from '../data/siteContent'
+import { featureIcons } from '../data/siteContent'
+import { useLanguage } from '../i18n/LanguageContext'
 
-// 第二屏：视觉组件方向卡片。items 可传入自定义卡片（每项 { icon, title, desc }）。
-export default function Features({ items = defaultFeatures, intro = featuresIntro }) {
+// 第二屏：视觉组件方向卡片。文案随语言切换，图标取自 siteContent.featureIcons（按序对应）。
+export default function Features() {
+  const { t } = useLanguage()
+  const intro = t.features
+  const items = t.features.items
   return (
     <section className="relative bg-black px-6 py-20 lg:px-10">
       <div className="mx-auto max-w-7xl">
@@ -16,7 +20,7 @@ export default function Features({ items = defaultFeatures, intro = featuresIntr
 
         <div className="grid gap-4 md:grid-cols-3">
           {items.map((feature, idx) => {
-            const Icon = feature.icon
+            const Icon = featureIcons[idx]
             return (
               <motion.article
                 key={feature.title}

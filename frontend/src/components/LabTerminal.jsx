@@ -1,9 +1,12 @@
 import { motion } from 'framer-motion'
 import { Activity, Microscope } from 'lucide-react'
-import { metrics as defaultMetrics } from '../data/siteContent'
+import { useLanguage } from '../i18n/LanguageContext'
 
-// 右侧“实验室终端”玻璃面板。metrics 可传入自定义指标。
-export default function LabTerminal({ metrics = defaultMetrics }) {
+// 右侧“实验室终端”玻璃面板。文字都在 i18n/translations.js 的 lab 字段里改。
+export default function LabTerminal() {
+  const { t } = useLanguage()
+  const lab = t.lab
+  const metrics = lab.metrics
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.96, y: 24 }}
@@ -16,11 +19,11 @@ export default function LabTerminal({ metrics = defaultMetrics }) {
         <div className="absolute right-0 top-0 h-32 w-32 bg-lime-200/10 blur-2xl" />
         <div className="flex items-center justify-between border-b border-white/10 pb-4">
           <div>
-            <p className="text-xs tracking-[0.34em] text-white/40">LAB TERMINAL</p>
-            <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em]">Pioneer Ecological Lab</h2>
+            <p className="text-xs tracking-[0.34em] text-white/40">{lab.terminalLabel}</p>
+            <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em]">{lab.title}</h2>
           </div>
           <div className="rounded-full border border-lime-100/20 bg-lime-100/10 px-3 py-1 text-xs tracking-[0.2em] text-lime-100">
-            LIVE
+            {lab.live}
           </div>
         </div>
 
@@ -59,7 +62,7 @@ export default function LabTerminal({ metrics = defaultMetrics }) {
           <div className="border border-white/10 bg-white/[0.04] p-4">
             <div className="flex items-center gap-2 text-lime-100/80">
               <Activity className="h-4 w-4" />
-              <span className="text-xs tracking-[0.24em]">SIGNAL</span>
+              <span className="text-xs tracking-[0.24em]">{lab.signalLabel}</span>
             </div>
             <div className="mt-4 h-2 overflow-hidden bg-white/10">
               <motion.div
@@ -73,9 +76,9 @@ export default function LabTerminal({ metrics = defaultMetrics }) {
           <div className="border border-white/10 bg-white/[0.04] p-4">
             <div className="flex items-center gap-2 text-lime-100/80">
               <Microscope className="h-4 w-4" />
-              <span className="text-xs tracking-[0.24em]">RESEARCH</span>
+              <span className="text-xs tracking-[0.24em]">{lab.researchLabel}</span>
             </div>
-            <p className="mt-3 text-sm text-white/55">Bio-light survey awaiting operator confirmation.</p>
+            <p className="mt-3 text-sm text-white/55">{lab.researchText}</p>
           </div>
         </div>
       </div>
